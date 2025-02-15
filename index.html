@@ -86,17 +86,33 @@
         }
 
         function botMove() {
-            let available = board.map((cell, index) => cell === "" ? index : null).filter(index => index !== null);
-            let move = available[Math.floor(Math.random() * available.length)];
-            if (move !== undefined) {
-                board[move] = "O";
-                cells[move].textContent = "O";
+            let bestMove = getBestMove();
+            if (bestMove !== null) {
+                board[bestMove] = "O";
+                cells[bestMove].textContent = "O";
                 checkWinner();
                 if (gameActive) {
                     currentPlayer = "X";
                     statusDisplay.textContent = `Player X's Turn`;
                 }
             }
+        }
+
+        function getBestMove() {
+            for (const pattern of winPatterns) {
+                let [a, b, c] = pattern;
+                if (board[a] === "O" && board[b] === "O" && board[c] === "") return c;
+                if (board[a] === "O" && board[c] === "O" && board[b] === "") return b;
+                if (board[b] === "O" && board[c] === "O" && board[a] === "") return a;
+            }
+            for (const pattern of winPatterns) {
+                let [a, b, c] = pattern;
+                if (board[a] === "X" && board[b] === "X" && board[c] === "") return c;
+                if (board[a] === "X" && board[c] === "X" && board[b] === "") return b;
+                if (board[b] === "X" && board[c] === "X" && board[a] === "") return a;
+            }
+            let available = board.map((cell, index) => cell === "" ? index : null).filter(index => index !== null);
+            return available.length ? available[Math.floor(Math.random() * available.length)] : null;
         }
 
         function checkWinner() {
